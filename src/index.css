@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Dark theme overrides for admin DataTable */
+.admin-table-dark > div {
+  border-color: rgb(30 41 59);
+  background-color: rgb(15 23 42);
+  color: rgb(226 232 240);
+}
+
+.admin-table-dark thead {
+  border-color: rgb(30 41 59);
+  background-color: rgb(15 23 42);
+}
+
+.admin-table-dark thead th {
+  color: rgb(148 163 184);
+}
+
+.admin-table-dark tbody {
+  divide-color: rgb(30 41 59);
+}
+
+.admin-table-dark tbody tr:hover {
+  background-color: rgb(30 41 59 / 0.5);
+}
+
+.admin-table-dark tbody td {
+  color: rgb(203 213 225);
+}
+
+.admin-table-dark > div > div:last-child {
+  border-color: rgb(30 41 59);
+}
+
+.admin-table-dark > div > div:last-child p,
+.admin-table-dark > div > div:last-child span {
+  color: rgb(148 163 184);
+}
+
+.admin-table-dark button {
+  border-color: rgb(51 65 85);
+  color: rgb(203 213 225);
+}
+
+.admin-table-dark button:hover:not(:disabled) {
+  background-color: rgb(30 41 59);
+}
+
+.admin-table-dark .flex.items-center.justify-center.rounded-xl {
+  border-color: rgb(30 41 59);
+  background-color: rgb(15 23 42);
+}
