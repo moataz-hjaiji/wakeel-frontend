@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSuperAdminAuth } from '../../contexts/SuperAdminAuthContext';
 import { ApiError } from '../../lib/api';
+import { Button, Card, Field, Input } from '../../components/ui/primitives';
 
 export function AdminLoginPage() {
   const navigate = useNavigate();
@@ -26,56 +27,58 @@ export function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
-      <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
-        <p className="text-xs font-semibold uppercase tracking-wider text-violet-400">
-          Super Admin
-        </p>
-        <h1 className="mt-2 text-2xl font-bold text-white">Platform Console</h1>
-        <p className="mt-2 text-sm text-slate-400">
-          Sign in to view all stores and their token consumption.
+    <div className="flex min-h-screen items-center justify-center bg-bg px-4">
+      <Card className="w-full max-w-sm">
+        <div className="flex items-center gap-2">
+          <span className="grid h-6 w-6 place-items-center rounded-md bg-brand text-xs font-bold text-white">
+            و
+          </span>
+          <span className="font-display text-base font-bold text-text">Wakeel</span>
+          <span className="rounded-full bg-warning-soft px-2 py-0.5 text-[11px] font-medium text-warning">
+            Admin
+          </span>
+        </div>
+        <h1 className="mt-4 font-display text-xl font-bold text-text">Admin console</h1>
+        <p className="mt-1 text-[13px] text-text-muted">
+          Sign in to view all stores and their token usage.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-300">Email</label>
-            <input
+        <form onSubmit={handleSubmit} className="mt-5 space-y-3.5">
+          <Field label="Email" htmlFor="email">
+            <Input
+              id="email"
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-2.5 text-white focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-300">Password</label>
-            <input
+          </Field>
+          <Field label="Password" htmlFor="password">
+            <Input
+              id="password"
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-2.5 text-white focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
             />
-          </div>
+          </Field>
           {error && (
-            <p className="rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-400">{error}</p>
+            <p className="rounded-[10px] bg-danger-soft px-3 py-2 text-[13px] text-danger">
+              {error}
+            </p>
           )}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full rounded-lg bg-violet-600 py-2.5 text-sm font-semibold text-white hover:bg-violet-500 disabled:opacity-60"
-          >
+          <Button type="submit" disabled={isSubmitting} className="w-full">
             {isSubmitting ? 'Signing in…' : 'Sign in'}
-          </button>
+          </Button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-slate-500">
+        <p className="mt-5 text-center text-xs text-text-subtle">
           Store owner?{' '}
-          <a href="/auth" className="text-violet-400 hover:underline">
+          <Link to="/auth" className="font-medium text-brand hover:underline">
             Go to store dashboard
-          </a>
+          </Link>
         </p>
-      </div>
+      </Card>
     </div>
   );
 }

@@ -1,8 +1,11 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useSuperAdminAuth } from '../../contexts/SuperAdminAuthContext';
+import { useI18n } from '../../contexts/I18nContext';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 
 export function AdminLayout() {
   const { admin, logout } = useSuperAdminAuth();
+  const { t } = useI18n();
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -11,36 +14,47 @@ export function AdminLayout() {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100">
-      <aside className="flex w-64 shrink-0 flex-col border-r border-slate-800 bg-slate-900">
-        <div className="border-b border-slate-800 px-6 py-5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-violet-400">
-            Super Admin
-          </p>
-          <h1 className="mt-1 text-lg font-bold text-white">Platform Console</h1>
+    <div className="flex min-h-screen bg-bg">
+      <aside className="flex h-screen w-56 shrink-0 flex-col border-e border-border bg-surface">
+        <div className="px-4 py-4">
+          <div className="flex items-center gap-2">
+            <span className="grid h-6 w-6 place-items-center rounded-md bg-brand text-xs font-bold text-white">
+              و
+            </span>
+            <span className="font-display text-base font-bold text-text">Wakeel</span>
+            <span className="rounded-full bg-warning-soft px-2 py-0.5 text-[11px] font-medium text-warning">
+              Admin
+            </span>
+          </div>
         </div>
-        <nav className="flex-1 px-4 py-4">
+        <nav className="flex-1 px-2.5 py-1">
           <Link
             to="/admin/dashboard"
-            className="block rounded-lg bg-violet-500/10 px-3 py-2 text-sm font-medium text-violet-300"
+            className="relative block rounded-md bg-brand-soft px-2.5 py-1.5 text-[13px] font-medium text-brand"
           >
-            Stores &amp; Token Usage
+            <span className="absolute inset-y-1.5 start-0 w-0.5 rounded-full bg-brand" />
+            {t('nav.stores')}
           </Link>
         </nav>
-        <div className="border-t border-slate-800 px-4 py-4">
-          <p className="truncate text-sm font-medium text-slate-200">{admin?.name}</p>
-          <p className="truncate text-xs text-slate-500">{admin?.email}</p>
+        <div className="border-t border-border p-2.5">
+          <p className="truncate px-2.5 text-[13px] font-medium text-text">{admin?.name}</p>
+          <p className="truncate px-2.5 text-xs text-text-subtle">{admin?.email}</p>
+          <div className="mt-2 px-2.5">
+            <LanguageSwitcher />
+          </div>
           <button
             type="button"
             onClick={handleLogout}
-            className="mt-3 w-full rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800"
+            className="mt-2 w-full rounded-md px-2.5 py-1.5 text-start text-[13px] text-text-muted transition-colors hover:bg-surface-muted hover:text-text"
           >
-            Sign out
+            {t('nav.signOut')}
           </button>
         </div>
       </aside>
       <main className="flex-1 overflow-auto">
-        <Outlet />
+        <div className="mx-auto max-w-[1120px] px-6 py-6">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

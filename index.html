@@ -4,10 +4,47 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ChatBot — Store Dashboard</title>
+    <meta name="theme-color" content="#1F8A70" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Bricolage+Grotesque:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Default (English) SEO. The <Seo> component rewrites these per language at
+         runtime, and the prerender step bakes the EN/FR/AR variants into static
+         HTML so crawlers get the right <title>/description/hreflang without JS. -->
+    <title>Wakeel — your WhatsApp answers on its own, in your voice</title>
+    <!-- data-seo keys match the <Seo> component so it updates these in place
+         (per language) rather than appending duplicates at runtime/prerender. -->
+    <meta
+      data-seo="description"
+      name="description"
+      content="Wakeel replies to your customers on WhatsApp in Derja, French, Arabic and English — only from what you tell it, and hands off to you when needed. For shops across Tunisia and the Maghreb."
+    />
+
+    <!-- Open Graph / Twitter (defaults; specialized per locale at runtime + prerender). -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Wakeel" />
+    <meta data-seo="og:title" property="og:title" content="Wakeel — your WhatsApp answers on its own" />
+    <meta
+      data-seo="og:description"
+      property="og:description"
+      content="Your WhatsApp answers on its own, in your voice. In Derja, French, Arabic and English. You stay in control."
+    />
+    <meta data-seo="og:image" property="og:image" content="/og-card.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      Wakeel — your WhatsApp answers on its own, in your voice. An AI agent that
+      replies to your customers on WhatsApp in Derja, French, Arabic and English,
+      only from what you tell it, and hands off to you when needed. Please enable
+      JavaScript to use the app.
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

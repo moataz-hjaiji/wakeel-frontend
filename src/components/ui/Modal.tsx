@@ -24,16 +24,16 @@ export function Modal({ open, title, onClose, children }: ModalProps) {
       <button
         type="button"
         aria-label="Close modal"
-        className="absolute inset-0 bg-slate-900/50"
+        className="absolute inset-0 bg-[rgba(15,26,36,0.32)]"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow-xl">
+      <div className="relative w-full max-w-[480px] rounded-[20px] border border-border bg-surface p-5 shadow-[var(--shadow-lg)]">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+          <h2 className="text-[17px] font-semibold text-text">{title}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+            className="rounded-md px-2 py-1 text-text-subtle hover:bg-surface-muted hover:text-text"
           >
             ✕
           </button>

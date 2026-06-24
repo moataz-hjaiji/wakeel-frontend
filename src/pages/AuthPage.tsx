@@ -1,13 +1,17 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useI18n } from '../contexts/I18nContext';
 import { ApiError } from '../lib/api';
+import { Button, Field, Input } from '../components/ui/primitives';
+import { LanguageSwitcher } from '../components/ui/LanguageSwitcher';
 
 type AuthMode = 'login' | 'signup';
 
 export function AuthPage() {
   const navigate = useNavigate();
   const { login, register } = useAuth();
+  const { t } = useI18n();
 
   const [mode, setMode] = useState<AuthMode>('login');
   const [name, setName] = useState('');
@@ -22,13 +26,9 @@ export function AuthPage() {
     e.preventDefault();
     setError('');
     setIsSubmitting(true);
-
     try {
-      if (isSignup) {
-        await register({ name, email, password });
-      } else {
-        await login({ email, password });
-      }
+      if (isSignup) await register({ name, email, password });
+      else await login({ email, password });
       navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Something went wrong');
@@ -43,88 +43,90 @@ export function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-bg">
       {/* Left panel — branding */}
-      <div className="hidden w-1/2 flex-col justify-between bg-indigo-600 p-12 text-white lg:flex">
-        <div>
-          <span className="text-2xl font-bold tracking-tight">ChatBot</span>
+      <div className="hidden w-1/2 flex-col justify-between bg-brand p-10 text-white lg:flex">
+        <div className="flex items-center gap-2">
+          <span className="grid h-7 w-7 place-items-center rounded-md bg-white/15 text-sm font-bold">
+            و
+          </span>
+          <span className="font-display text-lg font-bold">Wakeel</span>
         </div>
         <div>
-          <h1 className="text-4xl font-bold leading-tight">
-            Customer support,<br />powered by AI
+          <h1 className="font-display text-3xl font-bold leading-tight">
+            Your WhatsApp
+            <br />
+            answers itself.
           </h1>
-          <p className="mt-4 text-indigo-200">
-            Manage your catalog, FAQs, and chat with customers on web and WhatsApp — all from one dashboard.
+          <p className="mt-3 max-w-sm text-[15px] leading-relaxed text-white/80">
+            Connect your number and your agent replies to customers in their own
+            language — and hands off to you when needed.
           </p>
+          <div className="mt-6 flex flex-wrap gap-2 text-[13px] text-white/75">
+            <span className="rounded-full bg-white/10 px-2.5 py-1">Derja</span>
+            <span className="rounded-full bg-white/10 px-2.5 py-1">Français</span>
+            <span className="rounded-full bg-white/10 px-2.5 py-1">العربية</span>
+            <span className="rounded-full bg-white/10 px-2.5 py-1">English</span>
+          </div>
         </div>
-        <p className="text-sm text-indigo-300">© 2026 ChatBot Platform</p>
+        <p className="text-[13px] text-white/60">© 2026 Wakeel</p>
       </div>
 
       {/* Right panel — form */}
-      <div className="flex w-full flex-col items-center justify-center bg-slate-50 px-6 py-12 lg:w-1/2">
-        <div className="w-full max-w-md">
-          <div className="mb-8 lg:hidden">
-            <span className="text-2xl font-bold text-indigo-600">ChatBot</span>
+      <div className="relative flex w-full flex-col items-center justify-center px-6 py-12 lg:w-1/2">
+        <div className="absolute end-6 top-6">
+          <LanguageSwitcher />
+        </div>
+        <div className="w-full max-w-sm">
+          <div className="mb-6 flex items-center gap-2 lg:hidden">
+            <span className="grid h-6 w-6 place-items-center rounded-md bg-brand text-xs font-bold text-white">
+              و
+            </span>
+            <span className="font-display text-base font-bold text-text">Wakeel</span>
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-900">
-            {isSignup ? 'Create your store' : 'Welcome back'}
+          <h2 className="font-display text-xl font-bold text-text">
+            {isSignup ? t('auth.createAccount') : t('auth.welcomeBack')}
           </h2>
-          <p className="mt-2 text-slate-500">
+          <p className="mt-1 text-[13px] text-text-muted">
             {isSignup
-              ? 'Sign up to start building your chatbot'
-              : 'Sign in to your store dashboard'}
+              ? 'Set up your business and connect WhatsApp.'
+              : 'Sign in to your agent dashboard.'}
           </p>
 
           {/* Mode tabs */}
-          <div className="mt-6 flex rounded-lg bg-slate-200 p-1">
-            <button
-              type="button"
-              onClick={() => switchMode('login')}
-              className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
-                !isSignup
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Sign in
-            </button>
-            <button
-              type="button"
-              onClick={() => switchMode('signup')}
-              className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
-                isSignup
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Sign up
-            </button>
+          <div className="mt-5 flex rounded-[10px] bg-surface-muted p-1">
+            {(['login', 'signup'] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => switchMode(m)}
+                className={`flex-1 rounded-md py-1.5 text-[13px] font-medium transition-colors ${
+                  mode === m
+                    ? 'bg-surface text-text shadow-[var(--shadow-sm)]'
+                    : 'text-text-muted hover:text-text'
+                }`}
+              >
+                {m === 'login' ? t('auth.signIn') : t('auth.signUp')}
+              </button>
+            ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <form onSubmit={handleSubmit} className="mt-5 space-y-3.5">
             {isSignup && (
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-slate-700">
-                  Store name
-                </label>
-                <input
+              <Field label={t('auth.businessName')} htmlFor="name">
+                <Input
                   id="name"
-                  type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="My Store"
-                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 />
-              </div>
+              </Field>
             )}
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-                Email
-              </label>
-              <input
+            <Field label={t('auth.email')} htmlFor="email">
+              <Input
                 id="email"
                 type="email"
                 required
@@ -132,15 +134,15 @@ export function AuthPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@store.com"
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
               />
-            </div>
+            </Field>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700">
-                Password
-              </label>
-              <input
+            <Field
+              label={t('auth.password')}
+              htmlFor="password"
+              hint={isSignup ? 'Minimum 6 characters' : undefined}
+            >
+              <Input
                 id="password"
                 type="password"
                 required
@@ -149,36 +151,28 @@ export function AuthPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
               />
-              {isSignup && (
-                <p className="mt-1 text-xs text-slate-500">Minimum 6 characters</p>
-              )}
-            </div>
+            </Field>
 
             {error && (
-              <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-[10px] bg-danger-soft px-3 py-2 text-[13px] text-danger">
                 {error}
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
-            >
+            <Button type="submit" disabled={isSubmitting} className="w-full">
               {isSubmitting
                 ? 'Please wait…'
                 : isSignup
-                  ? 'Create account'
-                  : 'Sign in'}
-            </button>
+                  ? t('auth.createAccount')
+                  : t('auth.signIn')}
+            </Button>
           </form>
 
-          <p className="mt-6 text-center text-xs text-slate-500">
+          <p className="mt-5 text-center text-xs text-text-subtle">
             Platform admin?{' '}
-            <Link to="/admin/login" className="font-medium text-indigo-600 hover:underline">
-              Super admin console
+            <Link to="/admin/login" className="font-medium text-brand hover:underline">
+              Admin console
             </Link>
           </p>
         </div>

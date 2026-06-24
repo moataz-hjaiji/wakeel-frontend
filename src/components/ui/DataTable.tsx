@@ -104,32 +104,37 @@ export function DataTable<T>({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center rounded-xl border border-slate-200 bg-white py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
+      <div className="rounded-[14px] border border-border bg-surface p-3 shadow-[var(--shadow-sm)]">
+        <div className="h-6 animate-pulse rounded bg-surface-muted" />
+        <div className="mt-2 space-y-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-9 animate-pulse rounded bg-surface-muted" />
+          ))}
+        </div>
       </div>
     );
   }
 
   if (data.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center text-sm text-slate-500">
+      <div className="rounded-[14px] border border-dashed border-border bg-surface p-10 text-center text-[13px] text-text-subtle">
         {emptyMessage}
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-[14px] border border-border bg-surface shadow-[var(--shadow-sm)]">
       {selectable && selectedIds.size > 0 && (
-        <div className="flex items-center justify-between border-b border-indigo-100 bg-indigo-50 px-6 py-3">
-          <p className="text-sm font-medium text-indigo-900">
+        <div className="flex items-center justify-between border-b border-border bg-brand-soft px-4 py-2">
+          <p className="text-[13px] font-medium text-brand">
             {selectedIds.size} selected
           </p>
           <div className="flex gap-2">
             <button
               type="button"
               onClick={clearSelection}
-              className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="rounded-md border border-border bg-surface px-2.5 py-1 text-[13px] font-medium text-text-muted hover:bg-surface-muted"
             >
               Clear
             </button>
@@ -138,7 +143,7 @@ export function DataTable<T>({
                 type="button"
                 disabled={isBulkDeleting}
                 onClick={handleBulkDelete}
-                className="rounded-lg border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-60"
+                className="rounded-md border border-danger/30 bg-surface px-2.5 py-1 text-[13px] font-medium text-danger hover:bg-danger-soft disabled:opacity-60"
               >
                 {isBulkDeleting ? 'Deleting…' : bulkDeleteLabel}
               </button>
@@ -148,11 +153,11 @@ export function DataTable<T>({
       )}
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50">
+        <table className="w-full text-start text-[13px]">
+          <thead className="border-b border-border bg-surface-muted">
             <tr>
               {selectable && (
-                <th className="w-12 px-4 py-3">
+                <th className="w-10 px-3 py-2">
                   <input
                     type="checkbox"
                     checked={allPageSelected}
@@ -161,24 +166,24 @@ export function DataTable<T>({
                     }}
                     onChange={togglePage}
                     aria-label="Select all on this page"
-                    className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    className="h-4 w-4 rounded border-border-strong text-brand focus:ring-brand"
                   />
                 </th>
               )}
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className={`px-6 py-3 font-medium text-slate-600 ${col.className ?? ''}`}
+                  className={`px-4 py-2 font-medium text-text-muted ${col.className ?? ''}`}
                 >
                   {col.header}
                 </th>
               ))}
               {actions && (
-                <th className="px-6 py-3 text-right font-medium text-slate-600">Actions</th>
+                <th className="px-4 py-2 text-end font-medium text-text-muted">Actions</th>
               )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border">
             {paginatedData.map((row) => {
               const id = keyExtractor(row);
               const isSelected = selectedIds.has(id);
@@ -186,26 +191,26 @@ export function DataTable<T>({
               return (
                 <tr
                   key={id}
-                  className={isSelected ? 'bg-indigo-50/50 hover:bg-indigo-50' : 'hover:bg-slate-50'}
+                  className={isSelected ? 'bg-brand-soft/50' : 'hover:bg-surface-muted'}
                 >
                   {selectable && (
-                    <td className="w-12 px-4 py-4">
+                    <td className="w-10 px-3 py-2.5">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleRow(id)}
                         aria-label="Select row"
-                        className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                        className="h-4 w-4 rounded border-border-strong text-brand focus:ring-brand"
                       />
                     </td>
                   )}
                   {columns.map((col) => (
-                    <td key={col.key} className={`px-6 py-4 text-slate-700 ${col.className ?? ''}`}>
+                    <td key={col.key} className={`px-4 py-2.5 text-text ${col.className ?? ''}`}>
                       {col.render ? col.render(row) : null}
                     </td>
                   ))}
                   {actions && (
-                    <td className="px-6 py-4 text-right">{actions(row)}</td>
+                    <td className="px-4 py-2.5 text-end">{actions(row)}</td>
                   )}
                 </tr>
               );
@@ -214,11 +219,11 @@ export function DataTable<T>({
         </table>
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-slate-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-slate-500">
+      <div className="flex flex-col gap-2 border-t border-border px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-[13px] text-text-subtle">
           Showing {from}–{to} of {data.length}
           {selectable && selectedIds.size > 0 && (
-            <span className="ml-2 text-indigo-600">· {selectedIds.size} selected total</span>
+            <span className="ms-2 text-brand">· {selectedIds.size} selected total</span>
           )}
         </p>
         <div className="flex items-center gap-2">
@@ -226,18 +231,18 @@ export function DataTable<T>({
             type="button"
             disabled={page <= 1}
             onClick={() => setPage((p) => p - 1)}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md border border-border px-2.5 py-1 text-[13px] font-medium text-text-muted hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
           >
             Previous
           </button>
-          <span className="text-sm text-slate-600">
+          <span className="text-[13px] text-text-muted">
             Page {page} of {totalPages}
           </span>
           <button
             type="button"
             disabled={page >= totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md border border-border px-2.5 py-1 text-[13px] font-medium text-text-muted hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
           >
             Next
           </button>

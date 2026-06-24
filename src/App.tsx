@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { I18nProvider } from './contexts/I18nContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { SuperAdminAuthProvider } from './contexts/SuperAdminAuthContext';
 import { GuestRoute } from './components/GuestRoute';
@@ -9,20 +10,26 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
-import { CatalogPage } from './pages/CatalogPage';
-import { FaqsPage } from './pages/FaqsPage';
-import { ChatPage } from './pages/ChatPage';
+import { TrainingPage } from './pages/training/TrainingPage';
+import { ConversationsPage } from './pages/conversations/ConversationsPage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { WhatsappPage } from './pages/WhatsappPage';
+import { LandingPage } from './pages/LandingPage';
 
 export default function App() {
   return (
-    <AuthProvider>
-      <SuperAdminAuthProvider>
-        <BrowserRouter>
+    <I18nProvider>
+      <AuthProvider>
+        <SuperAdminAuthProvider>
+          <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navigate to="/auth" replace />} />
+            {/* Landing — path-based locales for SEO. "/" is English (default);
+                "/fr", "/ar", "/en" are crawlable alternates of the same page. */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/en" element={<LandingPage />} />
+            <Route path="/fr" element={<LandingPage />} />
+            <Route path="/ar" element={<LandingPage />} />
 
             <Route element={<GuestRoute />}>
               <Route path="/auth" element={<AuthPage />} />
@@ -31,10 +38,8 @@ export default function App() {
             <Route element={<ProtectedRoute />}>
               <Route element={<DashboardLayout />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/dashboard/chat" element={<ChatPage />} />
-                <Route path="/dashboard/catalog" element={<CatalogPage />} />
-                <Route path="/dashboard/products" element={<CatalogPage />} />
-                <Route path="/dashboard/faqs" element={<FaqsPage />} />
+                <Route path="/dashboard/conversations" element={<ConversationsPage />} />
+                <Route path="/dashboard/training" element={<TrainingPage />} />
                 <Route path="/dashboard/whatsapp" element={<WhatsappPage />} />
               </Route>
             </Route>
@@ -51,8 +56,9 @@ export default function App() {
 
             <Route path="*" element={<Navigate to="/auth" replace />} />
           </Routes>
-        </BrowserRouter>
-      </SuperAdminAuthProvider>
-    </AuthProvider>
+          </BrowserRouter>
+        </SuperAdminAuthProvider>
+      </AuthProvider>
+    </I18nProvider>
   );
 }

@@ -5,7 +5,9 @@ export interface KeyValueRow {
 }
 
 const rowInputClass =
-  'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20';
+  'h-9 w-full rounded-[10px] border border-border bg-surface px-3 text-[13px] text-text ' +
+  'placeholder:text-text-subtle focus-visible:border-brand focus-visible:outline-none ' +
+  'focus-visible:ring-[3px] focus-visible:ring-brand-ring';
 
 function newRow(): KeyValueRow {
   return { id: crypto.randomUUID(), key: '', value: '' };
@@ -85,10 +87,10 @@ export function KeyValueEditor({ rows, onChange }: KeyValueEditorProps) {
 
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-700">Attributes</label>
+      <label className="block text-[13px] font-medium text-text-muted">Attributes</label>
       <div className="mt-2 space-y-2">
         {rows.length === 0 ? (
-          <p className="text-sm text-slate-400">No attributes yet.</p>
+          <p className="text-[13px] text-text-subtle">No attributes yet.</p>
         ) : (
           rows.map((row) => (
             <div key={row.id} className="flex items-center gap-2">
@@ -99,7 +101,7 @@ export function KeyValueEditor({ rows, onChange }: KeyValueEditorProps) {
                 placeholder="Key"
                 className={rowInputClass}
               />
-              <span className="shrink-0 text-slate-400">:</span>
+              <span className="shrink-0 text-text-subtle">:</span>
               <input
                 type="text"
                 value={row.value}
@@ -110,7 +112,7 @@ export function KeyValueEditor({ rows, onChange }: KeyValueEditorProps) {
               <button
                 type="button"
                 onClick={() => removeRow(row.id)}
-                className="shrink-0 rounded-lg border border-red-200 px-2.5 py-2 text-xs font-medium text-red-600 hover:bg-red-50"
+                className="h-9 shrink-0 rounded-[10px] border border-danger/30 px-2.5 text-[13px] font-medium text-danger hover:bg-danger-soft"
                 aria-label="Remove attribute"
               >
                 Remove
@@ -122,7 +124,7 @@ export function KeyValueEditor({ rows, onChange }: KeyValueEditorProps) {
       <button
         type="button"
         onClick={addRow}
-        className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-700"
+        className="mt-2 text-[13px] font-medium text-brand hover:underline"
       >
         + Add attribute
       </button>

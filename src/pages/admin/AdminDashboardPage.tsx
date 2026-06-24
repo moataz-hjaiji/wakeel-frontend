@@ -2,6 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSuperAdminAuth } from '../../contexts/SuperAdminAuthContext';
 import { DataTable, type DataTableColumn } from '../../components/ui/DataTable';
 import { Modal } from '../../components/ui/Modal';
+import {
+  Badge,
+  Button,
+  Field,
+  Input,
+  PageHeader,
+  StatTile,
+} from '../../components/ui/primitives';
 import { ApiError } from '../../lib/api';
 import { adminService } from '../../services/admin.service';
 import type { AdminOverview, StoreWithUsage } from '../../types/admin';
@@ -104,8 +112,8 @@ export function AdminDashboardPage() {
         header: 'Store',
         render: (row) => (
           <div>
-            <p className="font-medium text-white">{row.name}</p>
-            <p className="text-xs text-slate-500">{row.email}</p>
+            <p className="font-medium text-text">{row.name}</p>
+            <p className="text-xs text-text-subtle">{row.email}</p>
           </div>
         ),
       },
@@ -120,11 +128,11 @@ export function AdminDashboardPage() {
         header: 'Status',
         render: (row) =>
           row.limitStatus.limit == null ? (
-            <span className="text-slate-500">Unlimited</span>
+            <Badge tone="neutral">Unlimited</Badge>
           ) : row.limitStatus.allowed ? (
-            <span className="text-emerald-400">Active</span>
+            <Badge tone="brand">Active</Badge>
           ) : (
-            <span className="font-medium text-red-400">Limit reached</span>
+            <Badge tone="danger">Limit reached</Badge>
           ),
       },
       {
@@ -136,13 +144,13 @@ export function AdminDashboardPage() {
       {
         key: 'cost',
         header: 'Est. cost',
-        className: 'whitespace-nowrap font-medium text-emerald-400',
+        className: 'whitespace-nowrap font-medium text-text',
         render: (row) => formatCost(row.usage.total_cost),
       },
       {
         key: 'createdAt',
         header: 'Joined',
-        className: 'whitespace-nowrap text-slate-500',
+        className: 'whitespace-nowrap text-text-subtle',
         render: (row) => new Date(row.createdAt).toLocaleDateString(),
       },
     ],
@@ -150,151 +158,124 @@ export function AdminDashboardPage() {
   );
 
   return (
-    <div className="p-8">
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Stores &amp; Token Usage</h1>
-          <p className="mt-1 text-sm text-slate-400">
-            Set monthly token limits — chatbot stops responding when a store hits its cap
-          </p>
-        </div>
-        <div className="flex flex-wrap items-end gap-3">
-          <div>
-            <label className="block text-xs font-medium text-slate-500">From</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="mt-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white"
-            />
+    <div>
+      <PageHeader
+        title="Stores & usage"
+        subtitle="Set monthly token limits — the agent pauses when a store hits its cap."
+        actions={
+          <div className="flex flex-wrap items-end gap-2">
+            <Field label="From" htmlFor="from">
+              <Input
+                id="from"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-auto"
+              />
+            </Field>
+            <Field label="To" htmlFor="to">
+              <Input
+                id="to"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-auto"
+              />
+            </Field>
+            <Button variant="secondary" onClick={loadOverview}>
+              Apply
+            </Button>
           </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-500">To</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="mt-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={loadOverview}
-            className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500"
-          >
-            Apply
-          </button>
-        </div>
-      </div>
+        }
+      />
 
       {overview && (
-        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Stores" value={String(overview.storeCount)} />
-          <StatCard label="Total tokens" value={formatNumber(overview.totals.total_tokens)} />
-          <StatCard
+        <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <StatTile label="Stores" value={String(overview.storeCount)} />
+          <StatTile label="Total tokens" value={formatNumber(overview.totals.total_tokens)} />
+          <StatTile
             label="At limit"
             value={String(overview.stores.filter((s) => !s.limitStatus.allowed).length)}
-            warn={
-              overview.stores.some((s) => !s.limitStatus.allowed) ? true : undefined
-            }
           />
-          <StatCard
+          <StatTile
             label="Est. platform cost"
             value={formatCost(overview.totals.total_cost)}
-            highlight
           />
         </div>
       )}
 
       {error ? (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center">
-          <p className="text-sm text-red-400">{error}</p>
+        <div className="rounded-[14px] border border-danger/30 bg-danger-soft p-6 text-center">
+          <p className="text-[13px] text-danger">{error}</p>
           <button
             type="button"
             onClick={loadOverview}
-            className="mt-3 text-sm font-medium text-red-300 underline"
+            className="mt-2 text-[13px] font-medium text-danger underline"
           >
             Try again
           </button>
         </div>
       ) : (
-        <div className="admin-table-dark">
-          <DataTable
-            data={overview?.stores ?? []}
-            columns={columns}
-            keyExtractor={(row) => row.id}
-            pageSize={10}
-            isLoading={isLoading}
-            emptyMessage="No stores registered yet."
-            actions={(row) => (
-              <button
-                type="button"
-                onClick={() => openLimitModal(row)}
-                className="rounded-lg border border-slate-600 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-800"
-              >
-                Set limit
-              </button>
-            )}
-          />
-        </div>
+        <DataTable
+          data={overview?.stores ?? []}
+          columns={columns}
+          keyExtractor={(row) => row.id}
+          pageSize={10}
+          isLoading={isLoading}
+          emptyMessage="No stores registered yet."
+          actions={(row) => (
+            <Button variant="secondary" size="sm" onClick={() => openLimitModal(row)}>
+              Set limit
+            </Button>
+          )}
+        />
       )}
 
       <Modal open={!!editingStore} title="Monthly token limit" onClose={closeLimitModal}>
         {editingStore && (
           <div className="space-y-4">
-            <p className="text-sm text-slate-600">
-              Store: <strong>{editingStore.name}</strong>
+            <p className="text-[13px] text-text-muted">
+              Store: <strong className="text-text">{editingStore.name}</strong>
             </p>
-            <p className="text-sm text-slate-500">
+            <p className="text-[13px] text-text-subtle">
               Used this month: {formatNumber(editingStore.limitStatus.used)} tokens
             </p>
 
-            <label className="flex items-center gap-2 text-sm text-slate-700">
+            <label className="flex items-center gap-2 text-[13px] text-text">
               <input
                 type="checkbox"
                 checked={unlimited}
                 onChange={(e) => setUnlimited(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300"
+                className="h-4 w-4 rounded border-border-strong text-brand focus:ring-brand"
               />
               Unlimited (no cap)
             </label>
 
             {!unlimited && (
-              <div>
-                <label className="block text-sm font-medium text-slate-700">
-                  Max tokens per month
-                </label>
-                <input
+              <Field label="Max tokens per month">
+                <Input
                   type="number"
                   min={1}
                   value={limitInput}
                   onChange={(e) => setLimitInput(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-300 px-4 py-2.5 text-slate-900 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                   placeholder="100000"
                 />
-              </div>
+              </Field>
             )}
 
             {limitError && (
-              <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{limitError}</p>
+              <p className="rounded-[10px] bg-danger-soft px-3 py-2 text-[13px] text-danger">
+                {limitError}
+              </p>
             )}
 
             <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={closeLimitModal}
-                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-              >
+              <Button variant="secondary" onClick={closeLimitModal}>
                 Cancel
-              </button>
-              <button
-                type="button"
-                disabled={isSavingLimit}
-                onClick={handleSaveLimit}
-                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500 disabled:opacity-60"
-              >
+              </Button>
+              <Button disabled={isSavingLimit} onClick={handleSaveLimit}>
                 {isSavingLimit ? 'Saving…' : 'Save limit'}
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -309,8 +290,8 @@ function UsageLimitCell({ row }: { row: StoreWithUsage }) {
   if (limit == null) {
     return (
       <div>
-        <p className="text-sm text-slate-300">{formatNumber(used)}</p>
-        <p className="text-xs text-slate-500">No limit</p>
+        <p className="text-[13px] text-text">{formatNumber(used)}</p>
+        <p className="text-xs text-text-subtle">No limit</p>
       </div>
     );
   }
@@ -319,40 +300,15 @@ function UsageLimitCell({ row }: { row: StoreWithUsage }) {
 
   return (
     <div>
-      <p className="text-sm text-slate-300">
+      <p className="text-[13px] text-text">
         {formatNumber(used)} / {formatNumber(limit)}
       </p>
-      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-surface-muted">
         <div
-          className={`h-full rounded-full ${pct >= 100 ? 'bg-red-500' : pct >= 80 ? 'bg-amber-500' : 'bg-violet-500'}`}
+          className={`h-full rounded-full ${pct >= 100 ? 'bg-danger' : pct >= 80 ? 'bg-warning' : 'bg-brand'}`}
           style={{ width: `${pct}%` }}
         />
       </div>
-    </div>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  highlight,
-  warn,
-}: {
-  label: string;
-  value: string;
-  highlight?: boolean;
-  warn?: boolean;
-}) {
-  return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-      <p className="text-xs font-medium uppercase tracking-wider text-slate-500">{label}</p>
-      <p
-        className={`mt-2 text-2xl font-bold ${
-          warn ? 'text-red-400' : highlight ? 'text-emerald-400' : 'text-white'
-        }`}
-      >
-        {value}
-      </p>
     </div>
   );
 }

@@ -1,0 +1,659 @@
+/* Lightweight i18n for Wakeel UI chrome. Keys named by meaning, not by English
+   text (per rtl-i18n.md). Three languages; Arabic drives RTL. */
+
+export type Lang = 'fr' | 'en' | 'ar';
+
+export const LANGS: { code: Lang; label: string; dir: 'ltr' | 'rtl' }[] = [
+  { code: 'fr', label: 'Français', dir: 'ltr' },
+  { code: 'en', label: 'English', dir: 'ltr' },
+  { code: 'ar', label: 'العربية', dir: 'rtl' },
+];
+
+export const dirFor = (lang: Lang): 'ltr' | 'rtl' =>
+  lang === 'ar' ? 'rtl' : 'ltr';
+
+/* ── Locale ⇄ URL mapping (landing SEO) ──────────────────────────────────────
+   The marketing site is path-based for crawlability: English is the default and
+   lives at "/"; French and Arabic live under "/fr" and "/ar". "/en" also resolves
+   to English so an explicit English URL exists for hreflang. Each locale is a
+   distinct, indexable URL with hreflang alternates pointing at the others. */
+export const DEFAULT_LANG: Lang = 'en';
+
+/** All landing locales in the order we emit hreflang/sitemap entries. */
+export const LANDING_LANGS: Lang[] = ['en', 'fr', 'ar'];
+
+/** Type guard: is this string a landing locale code? */
+export const isLandingLang = (v: string): v is Lang =>
+  (LANDING_LANGS as string[]).includes(v);
+
+/** Path prefix for a locale's landing page. Default lang has no prefix. */
+export const pathForLang = (lang: Lang): string =>
+  lang === DEFAULT_LANG ? '/' : `/${lang}`;
+
+/** BCP-47 tag used for <html lang>, og:locale and hreflang. */
+export const bcp47For = (lang: Lang): string =>
+  ({ en: 'en', fr: 'fr', ar: 'ar' })[lang];
+
+/** og:locale wants language_TERRITORY; pick the dominant market per language. */
+export const ogLocaleFor = (lang: Lang): string =>
+  ({ en: 'en_US', fr: 'fr_FR', ar: 'ar_TN' })[lang];
+
+type Dict = Record<string, string>;
+
+export const translations: Record<Lang, Dict> = {
+  fr: {
+    'nav.overview': 'Aperçu',
+    'nav.training': 'Formation',
+    'nav.conversations': 'Conversations',
+    'nav.testChat': 'Chat de test',
+    'nav.knowledge': 'Ce que sait l’agent',
+    'nav.qa': 'Questions',
+    'nav.whatsapp': 'WhatsApp',
+    'nav.signOut': 'Se déconnecter',
+    'tc.title': 'Formation',
+    'tc.subtitle': "Apprenez à votre agent tout ce qu'il doit savoir.",
+    'tc.overview': 'Ce que sait l’agent',
+    'tc.interview': 'Entretien IA',
+    'tc.basics': 'Informations de base',
+    'tc.catalog': 'Catalogue',
+    'tc.operating': 'Infos pratiques',
+    'tc.qa': 'Questions / réponses',
+    'tc.examples': 'Exemples de conversations',
+    'tc.documents': 'Documents',
+    'tc.publish': 'Publier',
+    'tc.publishing': 'Publication…',
+    'tc.published': 'Publié',
+    'tc.pending': 'modifications en attente',
+    'tc.allLive': 'Tout est en ligne',
+    'tc.draft': 'brouillon',
+    'tc.advanced': 'Mode avancé',
+    'tc.preview': 'Tester votre agent',
+    'tc.previewHint': 'Posez une question comme un client, avant de publier.',
+    'tc.add': 'Ajouter',
+    'tc.save': 'Enregistrer',
+    'tc.cancel': 'Annuler',
+    'tc.delete': 'Supprimer',
+    'tc.edit': 'Modifier',
+    'nav.stores': 'Boutiques & usage',
+
+    'common.refresh': 'Actualiser',
+    'common.connect': 'Connecter WhatsApp',
+    'common.cancel': 'Annuler',
+    'common.save': 'Enregistrer',
+    'common.tryAgain': 'Réessayer',
+
+    'overview.welcome': 'Bon retour, {name}',
+    'overview.subtitle': 'Voici comment se porte votre agent.',
+    'overview.agent': 'Agent',
+    'overview.active': 'Actif',
+    'overview.paused': 'En pause',
+    'overview.whatsapp': 'WhatsApp',
+    'overview.notConnected': 'Non connecté',
+    'overview.languages': 'Langues',
+    'overview.statConversations': 'Conversations aujourd’hui',
+    'overview.statResolved': 'Résolues automatiquement',
+    'overview.statHandoffs': 'Transferts',
+    'overview.statResponse': 'Réponse moyenne',
+    'overview.connectionDetails': 'Détails de connexion',
+
+    'whatsapp.title': 'WhatsApp',
+    'whatsapp.subtitle':
+      'Connectez le numéro WhatsApp de votre boutique. Votre agent répond automatiquement.',
+    'whatsapp.status': 'Statut',
+    'whatsapp.linkedNumber': 'Numéro lié',
+    'whatsapp.disconnect': 'Déconnecter',
+    'whatsapp.howItWorks': 'Comment ça marche',
+    'wa.statusDisconnected': 'Non connecté',
+    'wa.statusConnecting': 'En attente du scan',
+    'wa.statusConnected': 'Connecté',
+    'wa.statusFailed': 'Échec de connexion',
+
+    'auth.welcomeBack': 'Bon retour',
+    'auth.createAccount': 'Créez votre compte',
+    'auth.signIn': 'Se connecter',
+    'auth.signUp': 'S’inscrire',
+    'auth.email': 'E-mail',
+    'auth.password': 'Mot de passe',
+    'auth.businessName': 'Nom de l’entreprise',
+
+    // ── Landing ──────────────────────────────────────────────
+    'lp.nav.how': 'Comment ça marche',
+    'lp.nav.trust': 'Contrôle & confiance',
+    'lp.nav.useCases': 'Cas d’usage',
+    'lp.nav.pricing': 'Tarifs',
+    'lp.nav.faq': 'Questions',
+    'lp.nav.signIn': 'Se connecter',
+    'lp.nav.cta': 'Connecter mon WhatsApp',
+
+    'lp.hero.badge': 'Pour les commerces de Tunisie & du Maghreb',
+    'lp.hero.title': 'Votre WhatsApp répond tout seul. Dans votre voix.',
+    'lp.hero.subtitle':
+      'Wakeel répond à vos clients sur WhatsApp — uniquement à partir de ce que vous lui dites, et vous passe la main dès que c’est nécessaire.',
+    'lp.hero.ctaPrimary': 'Connecter mon WhatsApp',
+    'lp.hero.ctaSecondary': 'Voir une démo',
+    'lp.hero.trustLangs': 'Parle le derja, le français, l’arabe et l’anglais',
+    'lp.hero.trustControl': 'Vous gardez le contrôle. Reprenez la main à tout moment.',
+    'lp.hero.threadCustomer': 'Bonjour, vous livrez à Sfax ? C’est combien ?',
+    'lp.hero.threadAgent':
+      'Bonjour 👋 Oui, nous livrons à Sfax. La livraison est de 7 DT, gratuite au-delà de 150 DT. Vous voulez commander ?',
+    'lp.hero.typing': 'Wakeel écrit…',
+    'lp.hero.replyTime': 'Répond en quelques secondes',
+    'lp.hero.handledChip': 'Géré par Wakeel',
+
+    'seo.title':
+      'Wakeel — votre WhatsApp répond tout seul, dans votre voix',
+    'seo.description':
+      'Wakeel répond à vos clients sur WhatsApp en derja, français, arabe et anglais — uniquement à partir de ce que vous lui dites, et vous passe la main quand il le faut. Pour les commerces de Tunisie et du Maghreb.',
+    'seo.ogTitle': 'Wakeel — votre WhatsApp répond tout seul',
+    'seo.ogDescription':
+      'Votre WhatsApp répond tout seul, dans votre voix. En derja, français, arabe et anglais. Vous gardez le contrôle.',
+
+    'lp.how.kicker': 'Simple à mettre en place',
+    'lp.how.title': 'Prêt en trois étapes',
+    'lp.how.subtitle': 'Pas de code, pas de configuration compliquée.',
+    'lp.how.s1.title': 'Connectez votre WhatsApp',
+    'lp.how.s1.body': 'Scannez un QR code, comme WhatsApp Web. Votre numéro reste le vôtre.',
+    'lp.how.s2.title': 'Expliquez votre activité',
+    'lp.how.s2.body':
+      'Produits, prix, horaires, livraison, questions fréquentes. L’agent ne répond qu’à partir de ça.',
+    'lp.how.s3.title': 'Il répond — et vous transmet',
+    'lp.how.s3.body':
+      'Wakeel gère les questions courantes et vous passe la main pour le reste, instantanément.',
+
+    'lp.trust.kicker': 'La raison d’y faire confiance',
+    'lp.trust.title': 'Vous gardez le contrôle, toujours',
+    'lp.trust.subtitle':
+      'Wakeel est conçu pour rassurer, pas pour improviser. Voici comment il reste sous votre contrôle.',
+    'lp.trust.c1.title': 'Ne répond qu’avec ce que vous donnez',
+    'lp.trust.c1.body':
+      'Aucune réponse inventée. L’agent s’appuie uniquement sur les informations que vous avez fournies.',
+    'lp.trust.c2.title': 'Vous passe la main instantanément',
+    'lp.trust.c2.body':
+      'Dès qu’une demande sort du cadre, la conversation vous revient — sans que le client attende.',
+    'lp.trust.c3.title': 'Parle la langue de vos clients',
+    'lp.trust.c3.body':
+      'Derja, français, arabe ou anglais : il répond dans la langue du message reçu.',
+    'lp.trust.c4.title': 'Vous voyez chaque conversation',
+    'lp.trust.c4.body':
+      'Tout l’historique reste visible dans votre tableau de bord. Rien ne se passe dans votre dos.',
+
+    'lp.uc.kicker': 'Pensé pour votre quotidien',
+    'lp.uc.title': 'Ce que Wakeel gère pour vous',
+    'lp.uc.c1.title': 'Commandes e-commerce',
+    'lp.uc.c1.body':
+      'Disponibilité, prix, frais de livraison, suivi : il répond et prend la commande.',
+    'lp.uc.c2.title': 'Rendez-vous & réservations',
+    'lp.uc.c2.body':
+      'Créneaux disponibles, confirmations et rappels, directement dans la conversation.',
+    'lp.uc.c3.title': 'Questions fréquentes',
+    'lp.uc.c3.body':
+      'Horaires, adresse, retours, garanties : les réponses justes, à chaque fois.',
+
+    'lp.ml.kicker': 'Multilingue par nature',
+    'lp.ml.title': 'Un même agent, la langue de chaque client',
+    'lp.ml.subtitle':
+      'Le client écrit comme il veut. Wakeel répond dans la même langue, sans réglage de votre part.',
+    'lp.ml.q': 'Question du client',
+    'lp.ml.a': 'Réponse de Wakeel',
+    'lp.ml.derja.q': 'Chnowa el prix mta3 el livraison?',
+    'lp.ml.derja.a': 'La livraison 7 DT, w mجانية فوق 150 DT 🙂',
+    'lp.ml.fr.q': 'Vous êtes ouverts le dimanche ?',
+    'lp.ml.fr.a': 'Oui, le dimanche de 9h à 13h. Au plaisir de vous accueillir !',
+    'lp.ml.ar.q': 'هل التوصيل متوفر إلى صفاقس؟',
+    'lp.ml.ar.a': 'نعم، نوصّل إلى صفاقس. سعر التوصيل 7 دنانير ومجاني فوق 150 دينار.',
+
+    'lp.pricing.kicker': 'Tarifs simples',
+    'lp.pricing.title': 'Un prix clair, sans surprise',
+    'lp.pricing.subtitle': 'Commencez gratuitement. Évoluez quand vous êtes prêt.',
+    'lp.pricing.perMonth': '/ mois',
+    'lp.pricing.popular': 'Le plus choisi',
+    'lp.pricing.p1.name': 'Découverte',
+    'lp.pricing.p1.price': '0 DT',
+    'lp.pricing.p1.desc': 'Pour tester avec un seul numéro.',
+    'lp.pricing.p1.f1': '1 numéro WhatsApp',
+    'lp.pricing.p1.f2': '100 conversations / mois',
+    'lp.pricing.p1.f3': 'Transfert vers vous',
+    'lp.pricing.p1.cta': 'Commencer gratuitement',
+    'lp.pricing.p2.name': 'Commerce',
+    'lp.pricing.p2.price': '79 DT',
+    'lp.pricing.p2.desc': 'Pour une boutique active.',
+    'lp.pricing.p2.f1': 'Conversations illimitées',
+    'lp.pricing.p2.f2': 'Catalogue & réponses sur mesure',
+    'lp.pricing.p2.f3': 'Multilingue complet',
+    'lp.pricing.p2.f4': 'Historique des conversations',
+    'lp.pricing.p2.cta': 'Connecter mon WhatsApp',
+    'lp.pricing.p3.name': 'Sur mesure',
+    'lp.pricing.p3.price': 'Sur devis',
+    'lp.pricing.p3.desc': 'Plusieurs boutiques ou besoins spécifiques.',
+    'lp.pricing.p3.f1': 'Plusieurs numéros',
+    'lp.pricing.p3.f2': 'Accompagnement dédié',
+    'lp.pricing.p3.f3': 'Intégrations',
+    'lp.pricing.p3.cta': 'Nous contacter',
+
+    'lp.faq.kicker': 'Vos questions',
+    'lp.faq.title': 'Ce que les commerçants demandent',
+    'lp.faq.q1': 'Et s’il dit quelque chose de faux ?',
+    'lp.faq.a1':
+      'Wakeel ne répond qu’à partir des informations que vous lui donnez. S’il n’a pas la réponse, il ne l’invente pas — il vous passe la main.',
+    'lp.faq.q2': 'Je garde mon numéro WhatsApp ?',
+    'lp.faq.a2':
+      'Oui. Wakeel se connecte à votre numéro existant. Vos clients vous écrivent exactement comme avant.',
+    'lp.faq.q3': 'Puis-je reprendre la conversation ?',
+    'lp.faq.a3':
+      'À tout moment. Vous pouvez reprendre une conversation, et l’agent se met en retrait dès que vous intervenez.',
+    'lp.faq.q4': 'Dans quelles langues répond-il ?',
+    'lp.faq.a4':
+      'En derja, français, arabe et anglais. Il répond automatiquement dans la langue du message du client.',
+
+    'lp.footer.title': 'Laissez votre WhatsApp répondre — dans votre voix.',
+    'lp.footer.subtitle': 'Branchez votre numéro en quelques minutes. Reprenez la main quand vous voulez.',
+    'lp.footer.cta': 'Connecter mon WhatsApp',
+    'lp.footer.rights': 'Tous droits réservés.',
+    'lp.footer.tagline': 'L’agent WhatsApp de votre commerce.',
+  },
+  en: {
+    'nav.overview': 'Overview',
+    'nav.training': 'Training',
+    'nav.conversations': 'Conversations',
+    'nav.testChat': 'Test chat',
+    'nav.knowledge': 'What the agent knows',
+    'nav.qa': 'Q&A',
+    'nav.whatsapp': 'WhatsApp',
+    'nav.signOut': 'Sign out',
+    'tc.title': 'Training',
+    'tc.subtitle': 'Teach your agent everything it needs to know.',
+    'tc.overview': 'What the agent knows',
+    'tc.interview': 'AI interview',
+    'tc.basics': 'Business basics',
+    'tc.catalog': 'Catalog',
+    'tc.operating': 'Operating info',
+    'tc.qa': 'Q&A',
+    'tc.examples': 'Example conversations',
+    'tc.documents': 'Documents',
+    'tc.publish': 'Publish',
+    'tc.publishing': 'Publishing…',
+    'tc.published': 'Published',
+    'tc.pending': 'changes pending',
+    'tc.allLive': 'Everything is live',
+    'tc.draft': 'draft',
+    'tc.advanced': 'Advanced mode',
+    'tc.preview': 'Test your agent',
+    'tc.previewHint': 'Ask a question like a customer would, before you publish.',
+    'tc.add': 'Add',
+    'tc.save': 'Save',
+    'tc.cancel': 'Cancel',
+    'tc.delete': 'Delete',
+    'tc.edit': 'Edit',
+    'nav.stores': 'Stores & usage',
+
+    'common.refresh': 'Refresh',
+    'common.connect': 'Connect WhatsApp',
+    'common.cancel': 'Cancel',
+    'common.save': 'Save',
+    'common.tryAgain': 'Try again',
+
+    'overview.welcome': 'Welcome back, {name}',
+    'overview.subtitle': "Here's how your agent is doing.",
+    'overview.agent': 'Agent',
+    'overview.active': 'Active',
+    'overview.paused': 'Paused',
+    'overview.whatsapp': 'WhatsApp',
+    'overview.notConnected': 'Not connected',
+    'overview.languages': 'Languages',
+    'overview.statConversations': 'Conversations today',
+    'overview.statResolved': 'Auto-resolved',
+    'overview.statHandoffs': 'Handoffs',
+    'overview.statResponse': 'Avg. response',
+    'overview.connectionDetails': 'Connection details',
+
+    'whatsapp.title': 'WhatsApp',
+    'whatsapp.subtitle':
+      'Connect your store’s WhatsApp number. Your agent replies to customers automatically.',
+    'whatsapp.status': 'Status',
+    'whatsapp.linkedNumber': 'Linked number',
+    'whatsapp.disconnect': 'Disconnect',
+    'whatsapp.howItWorks': 'How it works',
+    'wa.statusDisconnected': 'Not connected',
+    'wa.statusConnecting': 'Waiting for scan',
+    'wa.statusConnected': 'Connected',
+    'wa.statusFailed': 'Connection failed',
+
+    'auth.welcomeBack': 'Welcome back',
+    'auth.createAccount': 'Create your account',
+    'auth.signIn': 'Sign in',
+    'auth.signUp': 'Sign up',
+    'auth.email': 'Email',
+    'auth.password': 'Password',
+    'auth.businessName': 'Business name',
+
+    // ── Landing ──────────────────────────────────────────────
+    'lp.nav.how': 'How it works',
+    'lp.nav.trust': 'Control & trust',
+    'lp.nav.useCases': 'Use cases',
+    'lp.nav.pricing': 'Pricing',
+    'lp.nav.faq': 'FAQ',
+    'lp.nav.signIn': 'Sign in',
+    'lp.nav.cta': 'Connect my WhatsApp',
+
+    'lp.hero.badge': 'For shops across Tunisia & the Maghreb',
+    'lp.hero.title': 'Your WhatsApp answers on its own. In your voice.',
+    'lp.hero.subtitle':
+      'Wakeel replies to your customers on WhatsApp — only from what you tell it, and hands the chat back to you the moment it should.',
+    'lp.hero.ctaPrimary': 'Connect my WhatsApp',
+    'lp.hero.ctaSecondary': 'See a demo',
+    'lp.hero.trustLangs': 'Speaks Derja, French, Arabic & English',
+    'lp.hero.trustControl': 'You stay in control. Hand off anytime.',
+    'lp.hero.threadCustomer': 'Hi, do you deliver to Sfax? How much?',
+    'lp.hero.threadAgent':
+      'Hello 👋 Yes, we deliver to Sfax. Delivery is 7 DT, free over 150 DT. Would you like to order?',
+    'lp.hero.typing': 'Wakeel is typing…',
+    'lp.hero.replyTime': 'Replies in seconds',
+    'lp.hero.handledChip': 'Handled by Wakeel',
+
+    'seo.title':
+      'Wakeel — your WhatsApp answers on its own, in your voice',
+    'seo.description':
+      'Wakeel replies to your customers on WhatsApp in Derja, French, Arabic and English — only from what you tell it, and hands off to you when needed. For shops across Tunisia and the Maghreb.',
+    'seo.ogTitle': 'Wakeel — your WhatsApp answers on its own',
+    'seo.ogDescription':
+      'Your WhatsApp answers on its own, in your voice. In Derja, French, Arabic and English. You stay in control.',
+
+    'lp.how.kicker': 'Easy to set up',
+    'lp.how.title': 'Live in three steps',
+    'lp.how.subtitle': 'No code, no complicated setup.',
+    'lp.how.s1.title': 'Connect your WhatsApp',
+    'lp.how.s1.body': 'Scan a QR code, just like WhatsApp Web. Your number stays yours.',
+    'lp.how.s2.title': 'Tell it about your business',
+    'lp.how.s2.body':
+      'Products, prices, hours, delivery, common questions. The agent only answers from that.',
+    'lp.how.s3.title': 'It replies — and hands off',
+    'lp.how.s3.body':
+      'Wakeel handles the everyday questions and passes the rest to you, instantly.',
+
+    'lp.trust.kicker': 'The reason to trust it',
+    'lp.trust.title': 'You stay in control, always',
+    'lp.trust.subtitle':
+      'Wakeel is built to reassure, not to improvise. Here’s how it stays under your control.',
+    'lp.trust.c1.title': 'Answers only from what you give it',
+    'lp.trust.c1.body':
+      'No made-up replies. The agent draws only on the information you provided.',
+    'lp.trust.c2.title': 'Hands off to a human instantly',
+    'lp.trust.c2.body':
+      'The moment a request goes beyond its scope, the chat comes to you — no waiting for the customer.',
+    'lp.trust.c3.title': 'Speaks your customer’s language',
+    'lp.trust.c3.body':
+      'Derja, French, Arabic or English: it replies in the language of the message it received.',
+    'lp.trust.c4.title': 'You see every conversation',
+    'lp.trust.c4.body':
+      'The full history stays visible in your dashboard. Nothing happens behind your back.',
+
+    'lp.uc.kicker': 'Built for your day-to-day',
+    'lp.uc.title': 'What Wakeel handles for you',
+    'lp.uc.c1.title': 'E-commerce orders',
+    'lp.uc.c1.body':
+      'Availability, prices, delivery fees, tracking: it answers and takes the order.',
+    'lp.uc.c2.title': 'Appointments & bookings',
+    'lp.uc.c2.body':
+      'Open slots, confirmations and reminders, right inside the conversation.',
+    'lp.uc.c3.title': 'Frequently asked questions',
+    'lp.uc.c3.body':
+      'Hours, address, returns, warranties: the right answers, every time.',
+
+    'lp.ml.kicker': 'Multilingual by nature',
+    'lp.ml.title': 'One agent, each customer’s language',
+    'lp.ml.subtitle':
+      'Customers write however they like. Wakeel replies in the same language, with no setup from you.',
+    'lp.ml.q': 'Customer asks',
+    'lp.ml.a': 'Wakeel replies',
+    'lp.ml.derja.q': 'Chnowa el prix mta3 el livraison?',
+    'lp.ml.derja.a': 'La livraison 7 DT, w mجانية فوق 150 DT 🙂',
+    'lp.ml.fr.q': 'Vous êtes ouverts le dimanche ?',
+    'lp.ml.fr.a': 'Oui, le dimanche de 9h à 13h. Au plaisir de vous accueillir !',
+    'lp.ml.ar.q': 'هل التوصيل متوفر إلى صفاقس؟',
+    'lp.ml.ar.a': 'نعم، نوصّل إلى صفاقس. سعر التوصيل 7 دنانير ومجاني فوق 150 دينار.',
+
+    'lp.pricing.kicker': 'Simple pricing',
+    'lp.pricing.title': 'Clear pricing, no surprises',
+    'lp.pricing.subtitle': 'Start free. Grow when you’re ready.',
+    'lp.pricing.perMonth': '/ month',
+    'lp.pricing.popular': 'Most chosen',
+    'lp.pricing.p1.name': 'Starter',
+    'lp.pricing.p1.price': '0 DT',
+    'lp.pricing.p1.desc': 'To try it with a single number.',
+    'lp.pricing.p1.f1': '1 WhatsApp number',
+    'lp.pricing.p1.f2': '100 conversations / month',
+    'lp.pricing.p1.f3': 'Handoff to you',
+    'lp.pricing.p1.cta': 'Start free',
+    'lp.pricing.p2.name': 'Business',
+    'lp.pricing.p2.price': '79 DT',
+    'lp.pricing.p2.desc': 'For an active shop.',
+    'lp.pricing.p2.f1': 'Unlimited conversations',
+    'lp.pricing.p2.f2': 'Catalog & tailored answers',
+    'lp.pricing.p2.f3': 'Full multilingual',
+    'lp.pricing.p2.f4': 'Conversation history',
+    'lp.pricing.p2.cta': 'Connect my WhatsApp',
+    'lp.pricing.p3.name': 'Custom',
+    'lp.pricing.p3.price': 'Let’s talk',
+    'lp.pricing.p3.desc': 'Multiple shops or specific needs.',
+    'lp.pricing.p3.f1': 'Multiple numbers',
+    'lp.pricing.p3.f2': 'Dedicated support',
+    'lp.pricing.p3.f3': 'Integrations',
+    'lp.pricing.p3.cta': 'Contact us',
+
+    'lp.faq.kicker': 'Your questions',
+    'lp.faq.title': 'What shop owners ask',
+    'lp.faq.q1': 'What if it says something wrong?',
+    'lp.faq.a1':
+      'Wakeel only answers from the information you give it. If it doesn’t have the answer, it won’t make one up — it hands off to you.',
+    'lp.faq.q2': 'Do I keep my WhatsApp number?',
+    'lp.faq.a2':
+      'Yes. Wakeel connects to your existing number. Your customers message you exactly as before.',
+    'lp.faq.q3': 'Can I take over a conversation?',
+    'lp.faq.a3':
+      'Anytime. You can step into any conversation, and the agent steps back the moment you do.',
+    'lp.faq.q4': 'What languages does it reply in?',
+    'lp.faq.a4':
+      'Derja, French, Arabic and English. It automatically replies in the language of the customer’s message.',
+
+    'lp.footer.title': 'Let your WhatsApp answer — in your voice.',
+    'lp.footer.subtitle': 'Connect your number in minutes. Take over whenever you want.',
+    'lp.footer.cta': 'Connect my WhatsApp',
+    'lp.footer.rights': 'All rights reserved.',
+    'lp.footer.tagline': 'The WhatsApp agent for your business.',
+  },
+  ar: {
+    'nav.overview': 'نظرة عامة',
+    'nav.training': 'التدريب',
+    'nav.conversations': 'المحادثات',
+    'nav.testChat': 'محادثة تجريبية',
+    'nav.knowledge': 'ما يعرفه الوكيل',
+    'nav.qa': 'الأسئلة',
+    'nav.whatsapp': 'واتساب',
+    'nav.signOut': 'تسجيل الخروج',
+    'tc.title': 'التدريب',
+    'tc.subtitle': 'علّم وكيلك كل ما يحتاج معرفته.',
+    'tc.overview': 'ما يعرفه الوكيل',
+    'tc.interview': 'مقابلة الذكاء',
+    'tc.basics': 'المعلومات الأساسية',
+    'tc.catalog': 'الكتالوج',
+    'tc.operating': 'معلومات التشغيل',
+    'tc.qa': 'الأسئلة والأجوبة',
+    'tc.examples': 'محادثات نموذجية',
+    'tc.documents': 'المستندات',
+    'tc.publish': 'نشر',
+    'tc.publishing': 'جارٍ النشر…',
+    'tc.published': 'منشور',
+    'tc.pending': 'تغييرات معلّقة',
+    'tc.allLive': 'كل شيء منشور',
+    'tc.draft': 'مسودة',
+    'tc.advanced': 'الوضع المتقدم',
+    'tc.preview': 'جرّب وكيلك',
+    'tc.previewHint': 'اسأل سؤالاً كما يفعل العميل، قبل النشر.',
+    'tc.add': 'إضافة',
+    'tc.save': 'حفظ',
+    'tc.cancel': 'إلغاء',
+    'tc.delete': 'حذف',
+    'tc.edit': 'تعديل',
+    'nav.stores': 'المتاجر والاستخدام',
+
+    'common.refresh': 'تحديث',
+    'common.connect': 'ربط واتساب',
+    'common.cancel': 'إلغاء',
+    'common.save': 'حفظ',
+    'common.tryAgain': 'حاول مرة أخرى',
+
+    'overview.welcome': 'مرحباً بعودتك، {name}',
+    'overview.subtitle': 'إليك كيف يعمل وكيلك.',
+    'overview.agent': 'الوكيل',
+    'overview.active': 'نشط',
+    'overview.paused': 'متوقف',
+    'overview.whatsapp': 'واتساب',
+    'overview.notConnected': 'غير متصل',
+    'overview.languages': 'اللغات',
+    'overview.statConversations': 'محادثات اليوم',
+    'overview.statResolved': 'تم حلّها تلقائياً',
+    'overview.statHandoffs': 'التحويلات',
+    'overview.statResponse': 'متوسط الرد',
+    'overview.connectionDetails': 'تفاصيل الاتصال',
+
+    'whatsapp.title': 'واتساب',
+    'whatsapp.subtitle':
+      'اربط رقم واتساب الخاص بمتجرك. يردّ وكيلك على العملاء تلقائياً.',
+    'whatsapp.status': 'الحالة',
+    'whatsapp.linkedNumber': 'الرقم المرتبط',
+    'whatsapp.disconnect': 'قطع الاتصال',
+    'whatsapp.howItWorks': 'كيف يعمل',
+    'wa.statusDisconnected': 'غير متصل',
+    'wa.statusConnecting': 'في انتظار المسح',
+    'wa.statusConnected': 'متصل',
+    'wa.statusFailed': 'فشل الاتصال',
+
+    'auth.welcomeBack': 'مرحباً بعودتك',
+    'auth.createAccount': 'أنشئ حسابك',
+    'auth.signIn': 'تسجيل الدخول',
+    'auth.signUp': 'إنشاء حساب',
+    'auth.email': 'البريد الإلكتروني',
+    'auth.password': 'كلمة المرور',
+    'auth.businessName': 'اسم النشاط',
+
+    // ── Landing ──────────────────────────────────────────────
+    'lp.nav.how': 'كيف يعمل',
+    'lp.nav.trust': 'التحكّم والثقة',
+    'lp.nav.useCases': 'حالات الاستخدام',
+    'lp.nav.pricing': 'الأسعار',
+    'lp.nav.faq': 'الأسئلة',
+    'lp.nav.signIn': 'تسجيل الدخول',
+    'lp.nav.cta': 'اربط واتساب',
+
+    'lp.hero.badge': 'لمتاجر تونس والمغرب العربي',
+    'lp.hero.title': 'واتساب يردّ تلقائياً. بصوتك أنت.',
+    'lp.hero.subtitle':
+      'يردّ وكيل على عملائك في واتساب — فقط مما تخبره به، ويعيد المحادثة إليك متى لزم الأمر.',
+    'lp.hero.ctaPrimary': 'اربط واتساب',
+    'lp.hero.ctaSecondary': 'شاهد عرضاً',
+    'lp.hero.trustLangs': 'يتحدث الدارجة والفرنسية والعربية والإنجليزية',
+    'lp.hero.trustControl': 'تبقى أنت المتحكّم. استلم المحادثة في أي وقت.',
+    'lp.hero.threadCustomer': 'مرحباً، هل توصّلون إلى صفاقس؟ كم السعر؟',
+    'lp.hero.threadAgent':
+      'مرحباً 👋 نعم، نوصّل إلى صفاقس. التوصيل 7 دنانير، ومجاني فوق 150 ديناراً. هل تودّ الطلب؟',
+    'lp.hero.typing': 'وكيل يكتب…',
+    'lp.hero.replyTime': 'يردّ خلال ثوانٍ',
+    'lp.hero.handledChip': 'مُدار بواسطة وكيل',
+
+    'seo.title': 'وكيل — واتساب يردّ تلقائياً، بصوتك أنت',
+    'seo.description':
+      'يردّ وكيل على عملائك في واتساب بالدارجة والفرنسية والعربية والإنجليزية — فقط مما تخبره به، ويعيد المحادثة إليك عند الحاجة. لمتاجر تونس والمغرب العربي.',
+    'seo.ogTitle': 'وكيل — واتساب يردّ تلقائياً',
+    'seo.ogDescription':
+      'واتساب يردّ تلقائياً، بصوتك أنت. بالدارجة والفرنسية والعربية والإنجليزية. تبقى أنت المتحكّم.',
+
+    'lp.how.kicker': 'سهل الإعداد',
+    'lp.how.title': 'جاهز في ثلاث خطوات',
+    'lp.how.subtitle': 'بدون برمجة وبدون إعدادات معقّدة.',
+    'lp.how.s1.title': 'اربط واتساب',
+    'lp.how.s1.body': 'امسح رمز QR، تماماً مثل واتساب ويب. رقمك يبقى لك.',
+    'lp.how.s2.title': 'عرّفه بنشاطك',
+    'lp.how.s2.body': 'المنتجات، الأسعار، المواعيد، التوصيل، الأسئلة الشائعة. يردّ من هذا فقط.',
+    'lp.how.s3.title': 'يردّ — ويحوّل إليك',
+    'lp.how.s3.body': 'يتولّى وكيل الأسئلة اليومية ويحوّل الباقي إليك فوراً.',
+
+    'lp.trust.kicker': 'سبب الثقة به',
+    'lp.trust.title': 'تبقى أنت المتحكّم دائماً',
+    'lp.trust.subtitle': 'صُمّم وكيل ليطمئنك لا ليرتجل. إليك كيف يبقى تحت سيطرتك.',
+    'lp.trust.c1.title': 'يردّ فقط مما تعطيه',
+    'lp.trust.c1.body': 'لا ردود مختلَقة. يعتمد الوكيل فقط على المعلومات التي قدّمتها.',
+    'lp.trust.c2.title': 'يحوّل إلى إنسان فوراً',
+    'lp.trust.c2.body': 'متى خرج الطلب عن نطاقه، تعود المحادثة إليك — دون انتظار من العميل.',
+    'lp.trust.c3.title': 'يتحدث لغة عميلك',
+    'lp.trust.c3.body': 'الدارجة أو الفرنسية أو العربية أو الإنجليزية: يردّ بلغة الرسالة الواردة.',
+    'lp.trust.c4.title': 'ترى كل محادثة',
+    'lp.trust.c4.body': 'يبقى السجل الكامل ظاهراً في لوحتك. لا شيء يحدث من دون علمك.',
+
+    'lp.uc.kicker': 'مصمّم ليومك',
+    'lp.uc.title': 'ما يتولّاه وكيل عنك',
+    'lp.uc.c1.title': 'طلبات المتجر',
+    'lp.uc.c1.body': 'التوفّر، الأسعار، رسوم التوصيل، التتبّع: يردّ ويأخذ الطلب.',
+    'lp.uc.c2.title': 'المواعيد والحجوزات',
+    'lp.uc.c2.body': 'المواعيد المتاحة والتأكيدات والتذكيرات، داخل المحادثة مباشرة.',
+    'lp.uc.c3.title': 'الأسئلة الشائعة',
+    'lp.uc.c3.body': 'المواعيد، العنوان، الإرجاع، الضمان: الإجابة الصحيحة في كل مرة.',
+
+    'lp.ml.kicker': 'متعدّد اللغات بطبيعته',
+    'lp.ml.title': 'وكيل واحد، بلغة كل عميل',
+    'lp.ml.subtitle': 'يكتب العميل كما يشاء. يردّ وكيل بنفس اللغة دون أي إعداد منك.',
+    'lp.ml.q': 'يسأل العميل',
+    'lp.ml.a': 'يردّ وكيل',
+    'lp.ml.derja.q': 'Chnowa el prix mta3 el livraison?',
+    'lp.ml.derja.a': 'La livraison 7 DT, w مجانية فوق 150 DT 🙂',
+    'lp.ml.fr.q': 'Vous êtes ouverts le dimanche ?',
+    'lp.ml.fr.a': 'Oui, le dimanche de 9h à 13h. Au plaisir de vous accueillir !',
+    'lp.ml.ar.q': 'هل التوصيل متوفر إلى صفاقس؟',
+    'lp.ml.ar.a': 'نعم، نوصّل إلى صفاقس. سعر التوصيل 7 دنانير ومجاني فوق 150 ديناراً.',
+
+    'lp.pricing.kicker': 'أسعار بسيطة',
+    'lp.pricing.title': 'سعر واضح بلا مفاجآت',
+    'lp.pricing.subtitle': 'ابدأ مجاناً. وسّع متى كنت جاهزاً.',
+    'lp.pricing.perMonth': '/ شهرياً',
+    'lp.pricing.popular': 'الأكثر اختياراً',
+    'lp.pricing.p1.name': 'البداية',
+    'lp.pricing.p1.price': '0 د.ت',
+    'lp.pricing.p1.desc': 'لتجربته برقم واحد.',
+    'lp.pricing.p1.f1': 'رقم واتساب واحد',
+    'lp.pricing.p1.f2': '100 محادثة / شهر',
+    'lp.pricing.p1.f3': 'التحويل إليك',
+    'lp.pricing.p1.cta': 'ابدأ مجاناً',
+    'lp.pricing.p2.name': 'الأعمال',
+    'lp.pricing.p2.price': '79 د.ت',
+    'lp.pricing.p2.desc': 'لمتجر نشط.',
+    'lp.pricing.p2.f1': 'محادثات غير محدودة',
+    'lp.pricing.p2.f2': 'كتالوج وردود مخصّصة',
+    'lp.pricing.p2.f3': 'دعم كامل لعدة لغات',
+    'lp.pricing.p2.f4': 'سجلّ المحادثات',
+    'lp.pricing.p2.cta': 'اربط واتساب',
+    'lp.pricing.p3.name': 'مخصّص',
+    'lp.pricing.p3.price': 'حسب الطلب',
+    'lp.pricing.p3.desc': 'عدة متاجر أو احتياجات خاصة.',
+    'lp.pricing.p3.f1': 'عدة أرقام',
+    'lp.pricing.p3.f2': 'دعم مخصّص',
+    'lp.pricing.p3.f3': 'تكاملات',
+    'lp.pricing.p3.cta': 'تواصل معنا',
+
+    'lp.faq.kicker': 'أسئلتك',
+    'lp.faq.title': 'ما يسأل عنه أصحاب المتاجر',
+    'lp.faq.q1': 'ماذا لو قال شيئاً خاطئاً؟',
+    'lp.faq.a1':
+      'يردّ وكيل فقط من المعلومات التي تعطيه إيّاها. إن لم تكن لديه الإجابة، لا يختلقها — بل يحوّل إليك.',
+    'lp.faq.q2': 'هل أحتفظ برقم واتساب؟',
+    'lp.faq.a2': 'نعم. يتصل وكيل برقمك الحالي. يراسلك عملاؤك تماماً كما قبل.',
+    'lp.faq.q3': 'هل يمكنني تولّي المحادثة؟',
+    'lp.faq.a3': 'في أي وقت. يمكنك الدخول إلى أي محادثة، ويتراجع الوكيل فور تدخّلك.',
+    'lp.faq.q4': 'بأي لغات يردّ؟',
+    'lp.faq.a4': 'الدارجة والفرنسية والعربية والإنجليزية. يردّ تلقائياً بلغة رسالة العميل.',
+
+    'lp.footer.title': 'دع واتساب يردّ — بصوتك أنت.',
+    'lp.footer.subtitle': 'اربط رقمك خلال دقائق. استلم المحادثة وقتما تشاء.',
+    'lp.footer.cta': 'اربط واتساب',
+    'lp.footer.rights': 'جميع الحقوق محفوظة.',
+    'lp.footer.tagline': 'وكيل واتساب لنشاطك التجاري.',
+  },
+};
