@@ -1,0 +1,13 @@
+﻿Make,Model,Year,Price,Mileage (km),Fuel type,Transmission,Color,Available
+Ford,F-150,2021,34500,41000,Petrol,Automatic,Blue,Yes
+Chevrolet,Malibu,2019,16900,62000,Petrol,Automatic,White,Yes
+Nissan,Altima,2022,22300,29000,Petrol,Automatic,Grey,Yes
+Hyundai,Tucson,2023,27900,15000,Hybrid,Automatic,Green,Yes
+Kia,Sportage,2022,26400,33000,Petrol,Automatic,Black,Yes
+Audi,A4,2020,29900,48000,Petrol,Automatic,Silver,Yes
+Volkswagen,Golf,2021,19900,37000,Petrol,Manual,Red,Yes
+Mazda,CX-5,2022,28750,26000,Petrol,Automatic,Soul red,Yes
+Subaru,Outback,2021,31200,39000,Petrol,Automatic,Green,No
+Lexus,RX 350,2022,45900,22000,Hybrid,Automatic,White,Yes
+Jeep,Wrangler,2020,33500,51000,Petrol,Manual,Yellow,Yes
+Porsche,Macan,2021,52900,34000,Petrol,Automatic,Black,Yes

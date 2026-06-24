@@ -7,6 +7,7 @@ const titleKeys: Record<string, string> = {
   '/dashboard': 'nav.overview',
   '/dashboard/conversations': 'nav.conversations',
   '/dashboard/training': 'nav.training',
+  '/dashboard/catalog': 'nav.catalog',
   '/dashboard/whatsapp': 'nav.whatsapp',
 };
 

@@ -5,6 +5,8 @@ import type { BusinessProfile, ToneOfVoice } from '../../../types/training';
 import { Button, Card, Field, Input } from '../../../components/ui/primitives';
 import type { SectionProps } from '../TrainingPage';
 import { BehaviorControls } from './BehaviorControls';
+import { FilesPanel } from './FilesPanel';
+import { Link } from 'react-router-dom';
 
 const TONES: { value: ToneOfVoice; label: string }[] = [
   { value: 'friendly', label: 'Friendly' },
@@ -143,7 +145,11 @@ export function BasicsSection({ onChanged }: SectionProps) {
       <Card>
         <h3 className="text-[15px] font-semibold text-text">How you price</h3>
         <p className="mt-0.5 text-[13px] text-text-muted">
-          Fixed prices go in the Catalog. Use this when pricing <strong>depends on the request</strong>{' '}
+          Fixed prices go in the{' '}
+          <Link to="/dashboard/catalog" className="font-medium text-brand hover:underline">
+            Catalog
+          </Link>
+          . Use this when pricing <strong>depends on the request</strong>{' '}
           (agencies, SaaS, custom work) — the agent will ask for details and prepare a quote instead
           of guessing a number.
         </p>
@@ -192,6 +198,8 @@ export function BasicsSection({ onChanged }: SectionProps) {
 
       {/* How the agent behaves */}
       <BehaviorControls onChanged={onChanged} />
+
+      <FilesPanel onChanged={onChanged} />
     </div>
   );
 }

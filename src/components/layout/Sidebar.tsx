@@ -6,6 +6,7 @@ const navItems = [
   { to: '/dashboard', key: 'nav.overview', end: true },
   { to: '/dashboard/conversations', key: 'nav.conversations', end: false },
   { to: '/dashboard/training', key: 'nav.training', end: false },
+  { to: '/dashboard/catalog', key: 'nav.catalog', end: false },
   { to: '/dashboard/whatsapp', key: 'nav.whatsapp', end: false },
 ];
 

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { trainingService } from '../../../services/training.service';
 import type { BusinessKnowledge, TrainingDocument } from '../../../types/training';
 import { Button, Card } from '../../../components/ui/primitives';
+import { KnowledgeEntryCard } from '../components/KnowledgeEntryCard';
 
-/** Upload files; for each, show the EDITABLE knowledge the agent extracted from
- *  it. Lives inside the Catalog tab. */
+/** Upload text documents (menu PDFs, notes). Structured catalogs belong in Catalog. */
 export function FilesPanel({ onChanged }: { onChanged: () => void }) {
   const { token } = useAuth();
   const [docs, setDocs] = useState<TrainingDocument[]>([]);
@@ -42,8 +43,12 @@ export function FilesPanel({ onChanged }: { onChanged: () => void }) {
     <Card>
       <h3 className="text-[15px] font-semibold text-text">Files (optional)</h3>
       <p className="mt-0.5 text-[13px] text-text-muted">
-        Upload a menu or price list. We pull out the facts your agent can use and show them below —
-        editable. (Your catalog and the rest always come first; files are a backup source.)
+        Upload a menu, price list, or notes. We extract readable facts for your agent. For product
+        spreadsheets (Excel/CSV), use the{' '}
+        <Link to="/dashboard/catalog" className="font-medium text-brand hover:underline">
+          Catalog
+        </Link>{' '}
+        page instead — it imports rows as products.
       </p>
 
       <div
@@ -96,7 +101,6 @@ export function FilesPanel({ onChanged }: { onChanged: () => void }) {
   );
 }
 
-/** One file + its editable extracted knowledge entries. */
 function FileEntry({
   doc,
   onRemove,
@@ -113,18 +117,26 @@ function FileEntry({
     token && trainingService.documentKnowledge(doc.id, token).then(setEntries);
   useEffect(() => {
     load();
-    // Re-poll once after a moment in case extraction is still running.
     const t = setTimeout(load, 3000);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doc.id, token]);
 
-  async function save(id: string, topic: string, content: string) {
+  async function editEntry(id: string, topic: string, content: string) {
     if (!token) return;
-    await trainingService.updateKnowledge(id, { topic, content }, token);
+    const nextTopic = window.prompt('Topic / title:', topic);
+    if (nextTopic == null) return;
+    const nextContent = window.prompt('Details:', content);
+    if (nextContent == null) return;
+    await trainingService.updateKnowledge(
+      id,
+      { topic: nextTopic.trim(), content: nextContent.trim() },
+      token,
+    );
     load();
     onChanged();
   }
+
   async function del(id: string) {
     if (!token) return;
     await trainingService.deleteKnowledge(id, token);
@@ -134,21 +146,21 @@ function FileEntry({
 
   return (
     <div className="rounded-[10px] border border-border p-3">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <span className="truncate text-[13px] font-medium text-text">📄 {doc.filename}</span>
         <button
           type="button"
           onClick={onRemove}
-          className="text-[12px] font-medium text-danger hover:underline"
+          className="shrink-0 text-[12px] font-medium text-danger hover:underline"
         >
-          Remove
+          Remove file
         </button>
       </div>
 
-      <p className="mt-1.5 text-[11px] font-medium text-text-subtle">
-        What the agent uses from this file:
+      <p className="mt-2 text-[11px] font-medium uppercase tracking-wide text-text-subtle">
+        Extracted for the agent
       </p>
-      <div className="mt-1 space-y-1.5">
+      <div className="mt-1.5 space-y-2">
         {entries == null ? (
           <p className="text-[12px] text-text-subtle">Reading the file…</p>
         ) : entries.length === 0 ? (
@@ -157,32 +169,14 @@ function FileEntry({
           </p>
         ) : (
           entries.map((e) => (
-            <div key={e.id} className="flex items-start gap-2 rounded-md bg-surface-muted px-2.5 py-1.5">
-              <input
-                value={e.topic}
-                onChange={(ev) =>
-                  setEntries((es) => es!.map((x) => (x.id === e.id ? { ...x, topic: ev.target.value } : x)))
-                }
-                onBlur={(ev) => save(e.id, ev.target.value, e.content)}
-                className="w-32 shrink-0 rounded border border-transparent bg-transparent px-1 text-[12px] font-medium text-text hover:border-border focus:border-brand focus:outline-none"
-              />
-              <input
-                value={e.content}
-                onChange={(ev) =>
-                  setEntries((es) => es!.map((x) => (x.id === e.id ? { ...x, content: ev.target.value } : x)))
-                }
-                onBlur={(ev) => save(e.id, e.topic, ev.target.value)}
-                className="min-w-0 flex-1 rounded border border-transparent bg-transparent px-1 text-[12px] text-text-muted hover:border-border focus:border-brand focus:outline-none"
-                dir="auto"
-              />
-              <button
-                type="button"
-                onClick={() => del(e.id)}
-                className="shrink-0 text-[12px] text-text-subtle hover:text-danger"
-              >
-                ✕
-              </button>
-            </div>
+            <KnowledgeEntryCard
+              key={e.id}
+              topic={e.topic}
+              content={e.content}
+              source="document"
+              onEdit={() => editEntry(e.id, e.topic, e.content)}
+              onDelete={() => del(e.id)}
+            />
           ))
         )}
       </div>

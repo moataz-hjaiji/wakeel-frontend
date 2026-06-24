@@ -84,6 +84,7 @@ export interface ConversationStats {
   agent_off: number;
   needsAttention: number;
   all: number;
+  mode?: AgentOperatingMode;
 }
 
 /** Realtime event payloads (room store:<id>). */

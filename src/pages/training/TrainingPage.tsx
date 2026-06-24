@@ -7,20 +7,12 @@ import { Badge, Button } from '../../components/ui/primitives';
 import { PreviewPanel } from './PreviewPanel';
 import { OverviewSection } from './sections/OverviewSection';
 import { BasicsSection } from './sections/BasicsSection';
-import { CatalogSection } from './sections/CatalogSection';
 import { OperatingSection } from './sections/OperatingSection';
 import { QnaSection } from './sections/QnaSection';
 import { InterviewSection } from './sections/InterviewSection';
 
-export type SectionKey =
-  | 'overview'
-  | 'basics'
-  | 'catalog'
-  | 'operating'
-  | 'qa'
-  | 'interview';
+export type SectionKey = 'overview' | 'basics' | 'operating' | 'qa' | 'interview';
 
-/** Each section: a plain name + a one-line "what & why". */
 const SECTIONS: {
   key: SectionKey;
   labelKey: string;
@@ -29,14 +21,11 @@ const SECTIONS: {
 }[] = [
   { key: 'overview', labelKey: 'tc.overview', num: 1, desc: 'Everything your agent knows, in one place' },
   { key: 'basics', labelKey: 'tc.basics', num: 2, desc: 'Name, what you do, pricing, how it behaves' },
-  { key: 'catalog', labelKey: 'tc.catalog', num: 3, desc: 'Items & prices, files (optional)' },
-  { key: 'operating', labelKey: 'tc.operating', num: 4, desc: 'Hours, delivery, policies (optional)' },
-  { key: 'qa', labelKey: 'tc.qa', num: 5, desc: 'Common questions & your answers' },
-  { key: 'interview', labelKey: 'tc.interview', num: 6, desc: 'Let the AI ask you what it needs' },
+  { key: 'operating', labelKey: 'tc.operating', num: 3, desc: 'Hours, delivery, policies (optional)' },
+  { key: 'qa', labelKey: 'tc.qa', num: 4, desc: 'Common questions & your answers' },
+  { key: 'interview', labelKey: 'tc.interview', num: 5, desc: 'Let the AI ask you what it needs' },
 ];
 
-/** Sections call onChanged() after any draft edit so the publish badge updates.
- *  jump() lets a section switch the active tab (overview edit links use it). */
 export interface SectionProps {
   onChanged: () => void;
   jump: (key: SectionKey) => void;
@@ -73,7 +62,6 @@ export function TrainingPage() {
 
   return (
     <div className="space-y-4">
-      {/* Publish bar */}
       <div className="rounded-[14px] border border-border bg-surface px-4 py-3 shadow-[var(--shadow-sm)]">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -97,7 +85,6 @@ export function TrainingPage() {
           </div>
         </div>
 
-        {/* Plain explainer of the draft → preview → publish flow. */}
         <div className="mt-2.5 flex flex-wrap items-center gap-1.5 border-t border-border pt-2.5 text-[12px] text-text-subtle">
           <span className="rounded-full bg-surface-muted px-2 py-0.5 font-medium text-text-muted">
             1. Edit
@@ -116,9 +103,7 @@ export function TrainingPage() {
         </div>
       </div>
 
-      {/* Body: nav + content + docked preview */}
       <div className="grid grid-cols-[230px_1fr_320px] gap-4 max-[1100px]:grid-cols-[200px_1fr]">
-        {/* Section nav — numbered steps with a one-line description each. */}
         <nav className="space-y-1">
           {SECTIONS.map((s) => {
             const isActive = active === s.key;
@@ -155,17 +140,14 @@ export function TrainingPage() {
           })}
         </nav>
 
-        {/* Active section */}
         <div className="min-w-0">
           {active === 'overview' && <OverviewSection {...sectionProps} />}
           {active === 'basics' && <BasicsSection {...sectionProps} />}
-          {active === 'catalog' && <CatalogSection {...sectionProps} />}
           {active === 'operating' && <OperatingSection {...sectionProps} />}
           {active === 'qa' && <QnaSection {...sectionProps} />}
           {active === 'interview' && <InterviewSection {...sectionProps} />}
         </div>
 
-        {/* Docked preview (hidden on narrow screens) */}
         <div className="h-[calc(100vh-11rem)] max-[1100px]:hidden">
           <PreviewPanel />
         </div>

@@ -1,21 +1,17 @@
+import { useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { trainingService } from '../../../services/training.service';
 import type { OverviewSection as OverviewSectionData } from '../../../types/training';
 import { Button, Card } from '../../../components/ui/primitives';
 import type { SectionProps, SectionKey } from '../TrainingPage';
-
-const SOURCE_LABEL: Record<string, string> = {
-  manual: 'added by you',
-  interview: 'from the interview',
-  document: 'from a file',
-};
+import { KnowledgeEntryCard } from '../components/KnowledgeEntryCard';
 
 /** Read-through of EXACTLY what the agent knows (compiled from every source),
- *  with edit links that jump to the right tab. General-knowledge entries are
- *  editable inline. */
+ *  with edit links that jump to the right tab. */
 export function OverviewSection({ onChanged, jump }: SectionProps) {
   const { token } = useAuth();
+  const navigate = useNavigate();
   const [sections, setSections] = useState<OverviewSectionData[] | null>(null);
 
   const load = useCallback(() => {
@@ -53,12 +49,13 @@ export function OverviewSection({ onChanged, jump }: SectionProps) {
 
   async function editEntry(id: string, topic: string, content: string) {
     if (!token) return;
-    const next = window.prompt('Edit this fact:', `${topic}: ${content}`);
-    if (next == null) return;
-    const [t, ...rest] = next.split(':');
+    const nextTopic = window.prompt('Topic / title:', topic);
+    if (nextTopic == null) return;
+    const nextContent = window.prompt('Details:', content);
+    if (nextContent == null) return;
     await trainingService.updateKnowledge(
       id,
-      { topic: t.trim(), content: rest.join(':').trim() || t.trim() },
+      { topic: nextTopic.trim(), content: nextContent.trim() },
       token,
     );
     load();
@@ -67,9 +64,18 @@ export function OverviewSection({ onChanged, jump }: SectionProps) {
 
   async function deleteEntry(id: string) {
     if (!token) return;
+    if (!window.confirm('Remove this knowledge entry?')) return;
     await trainingService.deleteKnowledge(id, token);
     load();
     onChanged();
+  }
+
+  function handleEditTarget(target: string) {
+    if (target === 'catalog') {
+      navigate('/dashboard/catalog');
+    } else {
+      jump(target as SectionKey);
+    }
   }
 
   return (
@@ -83,53 +89,38 @@ export function OverviewSection({ onChanged, jump }: SectionProps) {
 
       {sections.map((s) => (
         <Card key={s.key}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <h3 className="text-[14px] font-semibold text-text">{s.title}</h3>
             <button
               type="button"
-              onClick={() => jump(s.editTarget as SectionKey)}
-              className="text-[12px] font-medium text-brand hover:underline"
+              onClick={() => handleEditTarget(s.editTarget)}
+              className="shrink-0 text-[12px] font-medium text-brand hover:underline"
             >
               Edit →
             </button>
           </div>
 
           {s.entries ? (
-            <div className="mt-2 space-y-1.5">
+            <div className="mt-3 space-y-2">
               {s.entries.map((e) => (
-                <div
+                <KnowledgeEntryCard
                   key={e.id}
-                  className="group flex items-start justify-between gap-2 rounded-md bg-surface-muted px-3 py-1.5"
-                >
-                  <span className="text-[13px] text-text">
-                    <strong className="font-medium">{e.topic}:</strong> {e.content}
-                    <span className="ms-1 text-[11px] text-text-subtle">
-                      ({SOURCE_LABEL[e.source] ?? e.source})
-                    </span>
-                  </span>
-                  <span className="flex shrink-0 gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-                    <button
-                      type="button"
-                      onClick={() => editEntry(e.id, e.topic, e.content)}
-                      className="text-[12px] font-medium text-text-muted hover:text-text"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => deleteEntry(e.id)}
-                      className="text-[12px] font-medium text-danger hover:underline"
-                    >
-                      ✕
-                    </button>
-                  </span>
-                </div>
+                  topic={e.topic}
+                  content={e.content}
+                  source={e.source}
+                  onEdit={() => editEntry(e.id, e.topic, e.content)}
+                  onDelete={() => deleteEntry(e.id)}
+                />
               ))}
             </div>
           ) : (
-            <ul className="mt-2 space-y-0.5">
+            <ul className="mt-2 space-y-1">
               {s.lines.map((line, i) => (
-                <li key={i} className="whitespace-pre-wrap text-[13px] text-text-muted" dir="auto">
+                <li
+                  key={i}
+                  className="rounded-md bg-surface-muted/50 px-2.5 py-1.5 text-[13px] text-text-muted"
+                  dir="auto"
+                >
                   {line}
                 </li>
               ))}

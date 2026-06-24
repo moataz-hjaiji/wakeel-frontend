@@ -50,7 +50,10 @@ export function ConversationsPage() {
       setRows(data);
       setLoading(false);
     });
-    conversationsService.stats(token).then(setStats);
+    conversationsService.stats(token).then((s) => {
+      setStats(s);
+      if (s.mode) setMode(s.mode);
+    });
   }, [token, search]);
 
   useEffect(() => {

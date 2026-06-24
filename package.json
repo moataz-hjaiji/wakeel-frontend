@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "generate:catalog-templates": "node scripts/generate-catalog-templates.mjs",
     "build:seo": "tsc -b && vite build && node scripts/prerender.mjs",
     "prerender": "node scripts/prerender.mjs",
     "lint": "eslint .",

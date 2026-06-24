@@ -14,6 +14,7 @@ import { TrainingPage } from './pages/training/TrainingPage';
 import { ConversationsPage } from './pages/conversations/ConversationsPage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
+import { CatalogPage } from './pages/catalog/CatalogPage';
 import { WhatsappPage } from './pages/WhatsappPage';
 import { LandingPage } from './pages/LandingPage';
 
@@ -40,6 +41,7 @@ export default function App() {
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/dashboard/conversations" element={<ConversationsPage />} />
                 <Route path="/dashboard/training" element={<TrainingPage />} />
+                <Route path="/dashboard/catalog" element={<CatalogPage />} />
                 <Route path="/dashboard/whatsapp" element={<WhatsappPage />} />
               </Route>
             </Route>
