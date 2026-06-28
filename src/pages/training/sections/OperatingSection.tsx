@@ -9,6 +9,7 @@ import type {
   WeekHours,
   WeekKey,
 } from '../../../types/training';
+import { defaultWeek, normalizeWeekHours } from '../lib/hours';
 import { Button, Card, Field, Input, Select } from '../../../components/ui/primitives';
 import type { SectionProps } from '../TrainingPage';
 
@@ -22,20 +23,13 @@ const DAYS: { key: WeekKey; label: string }[] = [
   { key: 'sun', label: 'Sun' },
 ];
 
-function emptyWeek(): WeekHours {
-  return DAYS.reduce((acc, d) => {
-    acc[d.key] = { closed: false, ranges: [{ open: '09:00', close: '17:00' }] };
-    return acc;
-  }, {} as WeekHours);
-}
-
 export function OperatingSection({ onChanged }: SectionProps) {
   const { token } = useAuth();
 
   // Hours
   const [hours, setHours] = useState<Partial<OperatingHours>>({
     timezone: 'Africa/Tunis',
-    week: emptyWeek(),
+    week: defaultWeek(),
     exceptions: [],
   });
   const [hoursSaved, setHoursSaved] = useState(false);
@@ -54,16 +48,23 @@ export function OperatingSection({ onChanged }: SectionProps) {
   useEffect(() => {
     if (!token) return;
     trainingService.getHours(token).then((h) => {
-      if (h) setHours({ ...h, week: h.week ?? emptyWeek(), exceptions: h.exceptions ?? [] });
+      if (h) {
+        setHours({
+          ...h,
+          week: normalizeWeekHours(h.week),
+          exceptions: h.exceptions ?? [],
+        });
+      }
     });
     trainingService.listZones(token).then(setZones);
     trainingService.listPolicies(token).then(setPolicies);
   }, [token]);
 
-  const week = hours.week ?? emptyWeek();
+  const week = normalizeWeekHours(hours.week);
 
   function setDay(key: WeekKey, patch: Partial<WeekHours[WeekKey]>) {
-    const next = { ...week, [key]: { ...week[key], ...patch } };
+    const current = week[key];
+    const next = { ...week, [key]: { ...current, ...patch } };
     setHours({ ...hours, week: next });
   }
 
